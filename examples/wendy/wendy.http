@@ -1,0 +1,10 @@
+{
+    "module":"test",
+    "method":"test",
+    "body":{
+        "type":"json",
+        "data":{
+            "name":"Test"
+        }
+    }
+}
