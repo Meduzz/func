@@ -8,17 +8,11 @@ PS. but I've heard, that the main benefit of "lambdas" are the dx.
 
 ## Generated CLI
 
-The generated cli would have a couple of commands. `call`-command that would expect you to pass the request into stdin and would return the result to stdout.
-
-`listen`-command that would start a server that either listens to a .sock-file or a tcp port.
-
-### Carry around an extra command
-
-2 commands in one binary might seem like a waste of a good binary. But they are pretty small anyway.
+The generated cli would have a command. `call`-command that would expect you to pass the request into stdin and would return the result to stdout.
 
 ## Helpers
 
-There's a number of helpers created. Helpers to wrap functions and wendy modules and turn them into servers etc. But also helpers to call the result of the binaries. In form of a very generic client, and something that can execute commands, feed them stuff on stdin and capture their output.
+There's a number of helpers created. Helpers to wrap functions and wendy modules and turn them into working cli commands. But also helpers to call the result of the binaries. In form of a very generic client, and something that can execute commands, feed them stuff on stdin and capture their output.
 
 ## Wendy
 
@@ -28,7 +22,6 @@ Some infrastructure to route messages are still needed, but idealy you'd shove a
 
 ### TODO
 
-* I think the decoder_for_loop does what's expected, but it would be nice WITH SOME UNIT TESTS...
 * Logging should be captured both from the framework and from the "lambda"... somewhere, somehow.
 * Some stats about each call should be recorded somewhere, somehow.
 
