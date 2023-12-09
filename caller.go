@@ -82,10 +82,12 @@ func (c *Caller) CallJSON(in interface{}, out interface{}) error {
 	}
 
 	if cmd.ProcessState.Success() {
-		err = json.Unmarshal(buf.Bytes(), out)
+		if out != nil {
+			err = json.Unmarshal(buf.Bytes(), out)
 
-		if err != nil {
-			return err
+			if err != nil {
+				return err
+			}
 		}
 	}
 
