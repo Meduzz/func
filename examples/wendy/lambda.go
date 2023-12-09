@@ -19,7 +19,7 @@ type (
 )
 
 func main() {
-	module := wendy.NewModule("test")
+	module := wendy.NewModule("", "test")
 	module.WithHandler("test", handler)
 
 	cmds := funclib.WendyFunc(handler)

@@ -11,10 +11,10 @@ import (
 )
 
 // Turn a bunch of wendy modules into cobra commands.
-func WendyModules(modules ...*wendy.Module) []*cobra.Command {
+func WendyModules(app string, modules ...*wendy.Module) []*cobra.Command {
 	cmds := make([]*cobra.Command, 0)
 
-	handler := wendy.NewLocal(modules...)
+	handler := wendy.NewLocal(app, modules...)
 
 	call := &cobra.Command{}
 	call.Use = "call"
