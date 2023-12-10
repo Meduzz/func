@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"os/exec"
 	"time"
 )
@@ -33,14 +34,14 @@ func (c *Caller) AddEnv(key, value string) {
 }
 
 // Call the command and optionally send json to stdin and expect json from stdout.
-func (c *Caller) CallJSON(in interface{}, out interface{}) error {
+func (c *Caller) CallJSON(in interface{}, out interface{}) ([]byte, error) {
 	var bs []byte
 	var err error
 	if in != nil {
 		bs, err = json.Marshal(in)
 
 		if err != nil {
-			return err
+			return []byte(err.Error()), err
 		}
 	}
 
@@ -48,37 +49,47 @@ func (c *Caller) CallJSON(in interface{}, out interface{}) error {
 
 	defer cancel()
 
-	writer, _ := cmd.StdinPipe()
-	stdoutSync := c.stdout(cmd)
+	stdin, _ := cmd.StdinPipe()
+	stdout, _ := cmd.StdoutPipe()
+	stderr, _ := cmd.StderrPipe()
+	stdoutSync := c.outputCollector(stdout)
+	stderrSync := c.outputCollector(stderr)
 
 	err = cmd.Start()
 
 	if err != nil {
-		return err
+		return []byte(err.Error()), err
 	}
 
 	if bs != nil {
-		_, err = writer.Write(bs)
+		_, err = stdin.Write(bs)
 
 		if err != nil {
 			cmd.Process.Kill()
-			return err
+			return []byte(err.Error()), err
 		}
 	}
 
-	writer.Close()
+	stdin.Close()
 
 	buf, err := stdoutSync()
 
 	if err != nil {
 		cmd.Process.Kill()
-		return err
+		return []byte(err.Error()), err
+	}
+
+	errorz, err := stderrSync()
+
+	if err != nil {
+		cmd.Process.Kill()
+		return []byte(err.Error()), err
 	}
 
 	err = cmd.Wait()
 
 	if err != nil {
-		return err
+		return errorz.Bytes(), err
 	}
 
 	if cmd.ProcessState.Success() {
@@ -86,59 +97,69 @@ func (c *Caller) CallJSON(in interface{}, out interface{}) error {
 			err = json.Unmarshal(buf.Bytes(), out)
 
 			if err != nil {
-				return err
+				return errorz.Bytes(), err
 			}
 		}
 	}
 
-	return nil
+	return errorz.Bytes(), nil
 }
 
 // Call the command and optionally send text to stdin and read text from stdout.
-func (c *Caller) CallText(in string) (string, error) {
+func (c *Caller) CallText(in string) (string, []byte, error) {
 	cmd, cancel := c.command()
 
 	defer cancel()
 
-	writer, _ := cmd.StdinPipe()
-	stdoutSync := c.stdout(cmd)
+	stdin, _ := cmd.StdinPipe()
+	stdout, _ := cmd.StdoutPipe()
+	stderr, _ := cmd.StderrPipe()
+	stdoutSync := c.outputCollector(stdout)
+	stderrSync := c.outputCollector(stderr)
 
 	err := cmd.Start()
 
 	if err != nil {
-		return "", err
+		return "", nil, err
 	}
 
 	if in != "" {
-		_, err = writer.Write([]byte(in))
+		_, err = stdin.Write([]byte(in))
 
 		if err != nil {
 			cmd.Process.Kill()
-			return "", err
+			return "", nil, err
 		}
 	}
 
-	writer.Close()
+	stdin.Close()
 
 	buf, err := stdoutSync()
 
 	if err != nil {
 		cmd.Process.Kill()
-		return "", err
+		return "", nil, err
+	}
+
+	errorz, err := stderrSync()
+
+	if err != nil {
+		cmd.Process.Kill()
+		return "", nil, err
 	}
 
 	err = cmd.Wait()
 
 	if err != nil {
-		return "", err
+		return "", errorz.Bytes(), err
 	}
 
 	if cmd.ProcessState.Success() {
-		return buf.String(), nil
+		return buf.String(), errorz.Bytes(), nil
 	}
 
 	// TODO weird spot!
-	return "", nil
+	return "", errorz.Bytes(), nil
 }
 
 func (c *Caller) command() (*exec.Cmd, context.CancelFunc) {
@@ -148,8 +169,7 @@ func (c *Caller) command() (*exec.Cmd, context.CancelFunc) {
 	return exec.CommandContext(ctx, c.cmd, c.args...), cancel
 }
 
-func (c *Caller) stdout(cmd *exec.Cmd) func() (*bytes.Buffer, error) {
-	reader, _ := cmd.StdoutPipe()
+func (c *Caller) outputCollector(reader io.ReadCloser) func() (*bytes.Buffer, error) {
 	buffer := bytes.NewBufferString("")
 
 	return func() (*bytes.Buffer, error) {

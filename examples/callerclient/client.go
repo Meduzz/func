@@ -23,8 +23,8 @@ func main() {
 }
 
 func json() {
-	// timeout of 100ms usually fails the first run of the command...
-	cmd := funclib.NewCaller("./lambda", 100*time.Millisecond, "call")
+	// first run of a new binary takes a bit extra time
+	cmd := funclib.NewCaller("./lambda", 500*time.Millisecond, "call")
 
 	name := &Greeting{}
 	name.Name = "world"
@@ -35,7 +35,9 @@ func json() {
 	req.Body = wendy.Json(name)
 	res := &wendy.Response{}
 
-	err := cmd.CallJSON(req, res)
+	logz, err := cmd.CallJSON(req, res)
+
+	println(string(logz))
 
 	if err != nil {
 		panic(err)
@@ -49,7 +51,9 @@ func json() {
 
 func text() {
 	cmd := funclib.NewCaller("ls", 35*time.Millisecond, "-l")
-	text, err := cmd.CallText("")
+	text, logz, err := cmd.CallText("")
+
+	println(string(logz))
 
 	if err != nil {
 		panic(err)

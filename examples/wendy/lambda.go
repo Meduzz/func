@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 
 	funclib "github.com/Meduzz/func"
 	"github.com/Meduzz/helper/starters"
@@ -32,6 +33,8 @@ func main() {
 func handler(r *wendy.Request) *wendy.Response {
 	greeting := &Greeting{}
 	r.Body.Bind(greeting)
+
+	fmt.Fprintln(os.Stderr, "Almost done!")
 
 	return wendy.Ok(wendy.Json(&Reply{fmt.Sprintf("Hello %s!", greeting.Name)}))
 }
