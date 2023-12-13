@@ -44,7 +44,7 @@ func json() {
 	}
 
 	reply := &Reply{}
-	res.Body.Bind(reply)
+	res.Body.AsJson(reply)
 
 	println(reply.Greeting)
 }

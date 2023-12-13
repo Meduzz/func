@@ -3,13 +3,13 @@ module github.com/Meduzz/func
 go 1.20
 
 require (
-	github.com/Meduzz/wendy v0.0.0-20230912154832-a8b9d39ed7f6
+	github.com/Meduzz/wendy v0.0.0-20231211211341-2c0c7791f541
 	github.com/spf13/cobra v1.8.0
 )
 
 require (
 	github.com/Meduzz/rpc v0.0.0-20221119172413-394d0164f7af // indirect
-	github.com/Meduzz/wendy-rpc v0.0.0-20230913202925-735e4260e1a3 // indirect
+	github.com/Meduzz/wendy-rpc v0.0.0-20231211212241-818191006684 // indirect
 	github.com/bytedance/sonic v1.10.2 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20230717121745-296ad89f973d // indirect
 	github.com/chenzhuoyu/iasm v0.9.1 // indirect
@@ -26,7 +26,7 @@ require (
 )
 
 require (
-	github.com/Meduzz/helper v0.0.0-20231202105409-59bcdbd1bfc0
+	github.com/Meduzz/helper v0.0.0-20231213180033-bd83bc71a56e
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
@@ -38,7 +38,7 @@ require (
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
-	github.com/pelletier/go-toml/v2 v2.1.0 // indirect
+	github.com/pelletier/go-toml/v2 v2.1.1 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/ugorji/go/codec v1.2.12 // indirect
 	golang.org/x/crypto v0.16.0 // indirect

@@ -14,7 +14,7 @@ import (
 func WendyModules(app string, modules ...*wendy.Module) []*cobra.Command {
 	cmds := make([]*cobra.Command, 0)
 
-	handler := wendy.NewLocal(app, modules...)
+	handler := wendy.FromModules(app, modules...)
 
 	call := &cobra.Command{}
 	call.Use = "call"

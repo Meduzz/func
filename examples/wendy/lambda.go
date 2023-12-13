@@ -32,7 +32,7 @@ func main() {
 
 func handler(r *wendy.Request) *wendy.Response {
 	greeting := &Greeting{}
-	r.Body.Bind(greeting)
+	r.Body.AsJson(greeting)
 
 	fmt.Fprintln(os.Stderr, "Almost done!")
 
